@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy
-import scipy
+from scipy.optimize import minimize
 
 # plt.ion()
 # fig, ax = plt.subplots()
@@ -9,15 +9,25 @@ import scipy
 # fig.set_dpi(200)
 # fig.set_size_inches(4,6)
 
+print_output = True
+
+def printf(data):
+    if print_output:
+        print(data)
+    else:
+        return data
+
 def ln(number):
     number = float(number)
     number = max(number,0.0000001)
     number = numpy.log(number)
+    printf(number)
     return number
 
 def exp(number):
     number = float(number)
     number = numpy.exp(number)
+    printf(number)
     return number
 
 def NH3_molar_to_massic_frac(NH3_molar_frac):
@@ -27,6 +37,7 @@ def NH3_molar_to_massic_frac(NH3_molar_frac):
   NH3_mass = NH3_molar_frac*NH3_molar_wheight
   H2O_mass = H2O_molar_frac*H2O_molar_wheight
   NH3_massic_frac = NH3_mass/(NH3_mass+H2O_mass)
+  printf(NH3_massic_frac)
   return NH3_massic_frac
 
 def NH3_massic_to_molar_frac(NH3_mass_frac):
@@ -36,8 +47,8 @@ def NH3_massic_to_molar_frac(NH3_mass_frac):
   NH3_mols = NH3_mass_frac/NH3_molar_wheight
   H2O_mols = H2O_mass_frac/H2O_molar_wheight
   NH3_molar_frac = NH3_mols/(NH3_mols+H2O_mols)
+  printf(NH3_molar_frac)
   return NH3_molar_frac
-
 
 def T_px(p,x):
     p0 = 2   # MPa
@@ -65,6 +76,7 @@ def T_px(p,x):
         value_i = ai*((1-x)**mi)*(ln(p0/p)**ni)
         ser_i += value_i 
     T = t0*ser_i
+    printf(T)
     return T
 
 def T_py(p,y):
@@ -96,6 +108,7 @@ def T_py(p,y):
         value_i = ai*((1-y)**(mi/4))*(ln(p0/p)**ni)
         ser_i += value_i 
     T = t0*ser_i
+    printf(T)
     return T
 
 def y_px(p,x):
@@ -124,7 +137,7 @@ def y_px(p,x):
         ser_i += value_i 
 
     y = 1 - exp(ln(1-x)*ser_i)
-
+    printf(y)
     return y
 
 def hl(T,x):
@@ -155,6 +168,7 @@ def hl(T,x):
         value_i = ai*((T/T0-1)**mi)*(x**ni)
         ser_i += value_i 
     hl = h0*ser_i
+    printf(hl)
     return hl
 
 def hg(T,y):
@@ -186,9 +200,9 @@ def hg(T,y):
         value_i = ai*((1-T/T0)**mi)*((1-y)**(ni/4))
         ser_i += value_i 
     hg = h0*ser_i
+    printf(hg)
     return hg
 
-from scipy.optimize import minimize
 def p_Tx(T,x,p0=0.1):
     def T_residue(p,T,x):
         return (T-T_px(p,x))**2
@@ -196,19 +210,10 @@ def p_Tx(T,x,p0=0.1):
     print()
     pf = pf.x[0]
     pf = round(pf,5)
+    printf(p_Tx)
     return pf
 
-#Parei aqui
-#def = h_gasliquid_function(p,x):
-#  massic_fraction_horizontal_values = numpy.arange(0,1.005,step=0.005)
-#  molar_fraction_horizontal_values =numpy.zeros_like(massic_fraction_horizontal_values)
-#  for i in range(len(molar_fraction_horizontal_values)):
-#    molar_fraction_horizontal_values[i] = NH3_massic_to_molar_frac(massic_fraction_horizontal_values[i])
-#  Tsat = T_px(p,x)
-#  ysat = y_px(p,x)
-#  hlsat = hl(Tsat,x)
-
-def draw_standar_diagram():
+def draw_diagram():
     plt.figure(figsize=(36,36*1.62))
     colors_table = ['b','g','r','c','m','y','k','purple','b','g','r','c','b']
     massic_fraction_horizontal_values = numpy.arange(0,1.005,step=0.005)
@@ -222,30 +227,30 @@ def draw_standar_diagram():
     for curr_p_isobar in isobars:
         p = curr_p_isobar
 
-    hl_isobaric_vertical_values =numpy.zeros_like(molar_fraction_horizontal_values)
-    for i in range(len(hl_isobaric_vertical_values)):
-        Ti = T_px(p,molar_fraction_horizontal_values[i])
-        hl_isobaric_vertical_values[i] = hl(Ti,molar_fraction_horizontal_values[i])
+        hl_isobaric_vertical_values =numpy.zeros_like(molar_fraction_horizontal_values)
+        for i in range(len(hl_isobaric_vertical_values)):
+            Ti = T_px(p,molar_fraction_horizontal_values[i])
+            hl_isobaric_vertical_values[i] = hl(Ti,molar_fraction_horizontal_values[i])
 
-    hg_isobaric_vertical_values = numpy.zeros_like(molar_fraction_horizontal_values)
-    for i in range(len(hg_isobaric_vertical_values)):
-        xi = molar_fraction_horizontal_values[i]
-        Ti = T_py(p, xi)
-        hg_isobaric_vertical_values[i] = hg(Ti, xi)
-    
-    hgy_isobaric_vertical_values = numpy.zeros_like(molar_fraction_horizontal_values)
-    for i in range(len(hgy_isobaric_vertical_values)):
-        xi = molar_fraction_horizontal_values[i]
-        yi = y_px(p, xi)
-        Ti = T_py(p, yi)
-        hgy_isobaric_vertical_values[i] = hg(Ti, yi)
+        hg_isobaric_vertical_values = numpy.zeros_like(molar_fraction_horizontal_values)
+        for i in range(len(hg_isobaric_vertical_values)):
+            xi = molar_fraction_horizontal_values[i]
+            Ti = T_py(p, xi)
+            hg_isobaric_vertical_values[i] = hg(Ti, xi)
+        
+        hgy_isobaric_vertical_values = numpy.zeros_like(molar_fraction_horizontal_values)
+        for i in range(len(hgy_isobaric_vertical_values)):
+            xi = molar_fraction_horizontal_values[i]
+            yi = y_px(p, xi)
+            Ti = T_py(p, yi)
+            hgy_isobaric_vertical_values[i] = hg(Ti, yi)
 
-    curr_color = colors_table[color_index]
-    color_index += 1
-    label_iteration = 'at '+str(p*1000)+' kPa'
-    plt.plot(massic_fraction_horizontal_values, hl_isobaric_vertical_values, color=curr_color, label=label_iteration)
-    plt.plot(massic_fraction_horizontal_values, hg_isobaric_vertical_values, color=curr_color)
-    plt.plot(massic_fraction_horizontal_values, hgy_isobaric_vertical_values, color=curr_color)
+        curr_color = colors_table[color_index]
+        color_index += 1
+        label_iteration = 'at '+str(p*1000)+' kPa'
+        plt.plot(massic_fraction_horizontal_values, hl_isobaric_vertical_values, color=curr_color, label=label_iteration)
+        plt.plot(massic_fraction_horizontal_values, hg_isobaric_vertical_values, color=curr_color)
+        plt.plot(massic_fraction_horizontal_values, hgy_isobaric_vertical_values, color=curr_color)
 
     plt.legend(fontsize=50)
     plt.grid()
@@ -254,5 +259,5 @@ def draw_standar_diagram():
     plt.xlabel("Mass Fraction")
     plt.ylabel("Enthalpy [kJ/kg]")
     plt.title('h [kJ/kg] (liquid and vapor) X mass fraction of NH3.')
-    plt.show()
+    #plt.show()
     return True
