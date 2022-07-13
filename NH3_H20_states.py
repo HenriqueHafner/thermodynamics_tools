@@ -9,25 +9,15 @@ from scipy.optimize import minimize
 # fig.set_dpi(200)
 # fig.set_size_inches(4,6)
 
-print_output = True
-
-def printf(data):
-    if print_output:
-        print(data)
-    else:
-        return data
-
 def ln(number):
     number = float(number)
     number = max(number,0.0000001)
     number = numpy.log(number)
-    printf(number)
     return number
 
 def exp(number):
     number = float(number)
     number = numpy.exp(number)
-    printf(number)
     return number
 
 def NH3_molar_to_massic_frac(NH3_molar_frac):
@@ -37,7 +27,6 @@ def NH3_molar_to_massic_frac(NH3_molar_frac):
   NH3_mass = NH3_molar_frac*NH3_molar_wheight
   H2O_mass = H2O_molar_frac*H2O_molar_wheight
   NH3_massic_frac = NH3_mass/(NH3_mass+H2O_mass)
-  printf(NH3_massic_frac)
   return NH3_massic_frac
 
 def NH3_massic_to_molar_frac(NH3_mass_frac):
@@ -47,7 +36,6 @@ def NH3_massic_to_molar_frac(NH3_mass_frac):
   NH3_mols = NH3_mass_frac/NH3_molar_wheight
   H2O_mols = H2O_mass_frac/H2O_molar_wheight
   NH3_molar_frac = NH3_mols/(NH3_mols+H2O_mols)
-  printf(NH3_molar_frac)
   return NH3_molar_frac
 
 def T_px(p,x):
@@ -76,7 +64,6 @@ def T_px(p,x):
         value_i = ai*((1-x)**mi)*(ln(p0/p)**ni)
         ser_i += value_i 
     T = t0*ser_i
-    printf(T)
     return T
 
 def T_py(p,y):
@@ -108,7 +95,6 @@ def T_py(p,y):
         value_i = ai*((1-y)**(mi/4))*(ln(p0/p)**ni)
         ser_i += value_i 
     T = t0*ser_i
-    printf(T)
     return T
 
 def y_px(p,x):
@@ -137,7 +123,6 @@ def y_px(p,x):
         ser_i += value_i 
 
     y = 1 - exp(ln(1-x)*ser_i)
-    printf(y)
     return y
 
 def hl(T,x):
@@ -168,7 +153,6 @@ def hl(T,x):
         value_i = ai*((T/T0-1)**mi)*(x**ni)
         ser_i += value_i 
     hl = h0*ser_i
-    printf(hl)
     return hl
 
 def hg(T,y):
@@ -200,7 +184,6 @@ def hg(T,y):
         value_i = ai*((1-T/T0)**mi)*((1-y)**(ni/4))
         ser_i += value_i 
     hg = h0*ser_i
-    printf(hg)
     return hg
 
 def p_Tx(T,x,p0=0.1):
@@ -210,7 +193,6 @@ def p_Tx(T,x,p0=0.1):
     print()
     pf = pf.x[0]
     pf = round(pf,5)
-    printf(p_Tx)
     return pf
 
 def draw_diagram():
