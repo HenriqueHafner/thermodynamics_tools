@@ -2,13 +2,6 @@ import matplotlib.pyplot as plt
 import numpy
 from scipy.optimize import minimize
 
-# plt.ion()
-# fig, ax = plt.subplots()
-# ax.set_xlim(0.1,0.9)
-# ax.set_ylim(-90+273,190+273)
-# fig.set_dpi(200)
-# fig.set_size_inches(4,6)
-
 def ln(number):
     number = float(number)
     number = max(number,0.0000001)
